@@ -10,48 +10,73 @@ class GeneralInfoController extends Controller
 {
     public function DataValidation(Request $request){
             $validator=Validator::make($request->all(),[
-                                                     'fullname'=>'required|min:3|max:20|alpha',
-                                                     'phone_number'=>'required|digits:10',
-                                                     'fax_number'=>'required|regex:/^\+\d{2}\d{10}$/',
-                                                     'email'=>'required|email',
-                                                     'address'=>'required',
-                                                     'position'=>'required',
-                                                     'present_salary'=>'required|regex:/^\d+(\.\d{1,2})?$/',
-                                                     'salary_desire'=>'required|regex:/^\d+(\.\d{1,2})?$/',
-                                                     'date'=>'required|date|date_format:Y-m-d',
-                                                     'ptime/ftime'=>'required|in:PartTime,FullTime',
-                                                     'llc_applied_sb'=>'required|in:yes,no',
-                                                     'where_applied'=>'max:255',
-                                                     'find_sb'=>'required',
-                                                     'legally_to_work'=>'required|in:yes,no',
-                                                     'sponsorship_employement'=>'required|in:yes,no',
-                                                     'convicted_crime'=>'required|in:yes,no'
+                                                     'FullName'=>'required|min:3|regex:/^[a-zA-Z\s]+$/',
+                                                     'PhoneNumber'=>'required|digits:10',
+                                                     'FaxNumber'=>'required|regex:/^\+\d{2}\d{10}$/',
+                                                     'Email'=>'required|email|unique:generalinfo,email',
+                                                     'Address'=>'required',
+                                                     'Position'=>'required',
+                                                     'PresentSalary'=>'required|regex:/^\d+(\.\d{1,2})?$/',
+                                                     'SalaryDesire'=>'required|regex:/^\d+(\.\d{1,2})?$/',
+                                                     'Date'=>'required|date|date_format:Y-m-d',
+                                                     'Time'=>'required|in:PartTime,FullTime',
+                                                     'AlreadySB'=>'required|in:yes,no',
+                                                     'Where'=>'max:255',
+                                                     'Application'=>'required',
+                                                     'LegallyWork'=>'required|in:yes,no',
+                                                     'SponsorshipEmployement'=>'required|in:yes,no',
+                                                     'ConvictedCrime'=>'required|in:yes,no'
                                                    ],
                                                    [
-                                                     'fullname.required'=>'we need to know full name!',
-                                                     'fullname.alpha'=>'fullname field contain only aplhabets character!',
-                                                     'fax_number.regex'=>'Give the correct format of fax number',
-                                                     'email.required'=>'without email,not proceed',
-                                                     'position.required'=>'we need to know position!',
-                                                     'present_salary.regex'=>'The salary must be a numeric value with up to 2 decimal places.',
-                                                     'present_salary.numeric'=>'The salary must be a numeric value.',
-                                                     'salary_desire.regex'=>'The salary must be a numeric value with up to 2 decimal places.',
-                                                     'salary_desire.numeric'=>'The salary must be a numeric value.',
-                                                     'date.date_format'=>'Give y/m/d format of this date field',
-                                                     //  'email.unique' => 'This email is already registered with us.',
-                                                     'email.email' => 'Your email does not appear to be valid.',
-                                                     'ptime/ftime.in' => 'The ptime/ftime must be either "Partime" or "Fulltime".',
-                                                     'llc_applied_sb.in' => 'The llc_applied_sb must be either "yes" or "no".',
-                                                     'where_applied'=>'text length must be 20!',
-                                                     'legally_to_work.in' => 'The legally_to_work must be either "yes" or "no".',
-                                                     'sponsorship_employement.in' => 'The sponsorship_employement must be either "yes" or "no".',
-                                                     'convicted_crime.in' => 'The convicted_crime must be either "yes" or "no".',
+                                                     'FullName.required'=>'FullName Field is Required',
+                                                     'FullName.regex'=>'FullName field contain only Aplhabets Character!',
+                                                     'FaxNumber.regex'=>'Give the correct format of FaxNumber',
+                                                     'Email.required'=>'Email Field is Required',
+                                                     'Position.required'=>'Position Field is Required',
+                                                     'PresentSalary.regex'=>'The Present_Salary must be a numeric value with up to 2 decimal places.',
+                                                     'PresentSalary.numeric'=>'The Present_Salary must be a numeric value.',
+                                                     'SalaryDesire.regex'=>'The Salary_Desire must be a numeric value with up to 2 decimal places.',
+                                                     'SalaryDesire.numeric'=>'The Salary_Desire must be a numeric value.',
+                                                     'Date.date_format'=>'Give y/m/d format of this Date Field',
+                                                     'Email.unique' => 'This Email is already registered with us.',
+                                                     'Email.email' => 'Invalid Email!!.',
+                                                     'Time.in' => 'The Time Field must be either "Partime" or "Fulltime".',
+                                                     'AlreadySB.in' => 'The Already_SB must be either "yes" or "no".',
+                                                     'Application'=>'Application Field must be Required!',
+                                                     'LegallyWork.in' => 'The Legally_Work must be either "yes" or "no".',
+                                                     'SponsorshipEmployement.in' => 'The Sponsorship_Employement must be either "yes" or "no".',
+                                                     'ConvictedCrime.in' => 'The Convicted_Crime must be either "yes" or "no".',
                                                    ]
                                        );
             if($validator->fails()){
-                return $validator->errors();
+                return response()->json([
+                    'error' => $validator->errors()
+                ]);
             }else{
-                return['output'=>'Succesfully Validated'];
+                $data = $validator->validated();
+
+                $user = new generalinfo;
+                $user->FullName = (string) $data['FullName'];
+                $user->PhoneNumber = $data['PhoneNumber'];
+                $user->FaxNumber = $data['FaxNumber'];
+                $user->Email = (string)$data['Email'];
+                $user->Address = (string)$data['Address'];
+                $user->Position = (string) $data['Position'];
+                $user->Present_Salary = $data['PresentSalary'];
+                $user->Salary_Desire = $data['SalaryDesire'];
+                $user->Date = (string)$data['Date'];
+                $user->Time = (string)$data['Time'];
+                $user->Already_SB = (string)$data['AlreadySB'];
+                $user->Where = (string)$data['Where'];
+                $user->Application = (string)$data['Application'];
+                $user->Legally_Work = (string)$data['LegallyWork'];
+                $user->Sponsorship_Employement =(string) $data['SponsorshipEmployement'];
+                $user->Convicted_Crime = (string)$data['Convicted_Crime'];
+                $user->save();
+
+                return response()->json([
+                    'output' => 'Validation passed and data saved successfully!'
+                ]);
             }
 
     }

@@ -59,17 +59,25 @@ class EducationInfoController extends Controller
 
         if($education_attended->fails())
         {
-            return $education_attended->errors();
+            return response()->json([
+                'error' => $education_attended->errors()
+            ]);
         }
         else if($education_verifying->fails()){
-            return $education_verifying->errors();
+            return response()->json([
+                'error' => $education_verifying->errors()
+            ]);
         }
         else if($prof_skill_certificate->fails())
         {
-            return $prof_skill_certificate->errors();
+            return response()->json([
+                'error' => $prof_skill_certificate->errors()
+            ]);
         }
         else{
-            return['output'=>'Succesfully Validated'];
+            return response()->json([
+                'output' => 'Validation passed and data processed successfully!'
+            ]);
         }
 }
 }
